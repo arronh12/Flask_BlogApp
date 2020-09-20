@@ -18,6 +18,7 @@
           <li class="active"><a href="{{ url_for("home") }}">Home</a></li>
           <li><a href="#">Posts</a></li>
           <li><a href="#">Friends</a></li>
+          <li><a href="{{ url_for("user") }}">Profile</a></li>
           {% if "user" in session %}
             <li style="float: right"><a href="{{ url_for("logout") }}">Logout</a></li>
           {% else %}
@@ -27,8 +28,9 @@
       </div>
     </nav>
 
-    <h1>arron's website</h1>
-    {% block content %}
-    {% endblock %}
+    <div class="container-fluid">
+        {% block content %}
+        {% endblock %}
+    </div>
 </body>
 </html>
