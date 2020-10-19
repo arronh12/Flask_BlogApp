@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
+from datetime import date, datetime
 
 app = Flask(__name__)
 
@@ -13,14 +14,32 @@ app.secret_key = "45Q@3DS*wo64Uzae%98hmargh"
 app.permanent_session_lifetime = timedelta(minutes=5)
 
 
+#-----------------------------------------------------------------------------------------
+# db models
+#-----------------------------------------------------------------------------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
+    posts = db.relationship('Post', backref='user', lazy='dynamic')
 
     def __init__(self, name, email):
         self.name = name
         self.email = email
+
+    def __repr__(self):
+        return self.name
+
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    post_title = db.Column(db.String(100))
+    post_content = db.Column(db.String(200))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+#------------------------------------------------------------------------------------------
 
 
 @app.route("/")
@@ -64,6 +83,17 @@ def logout():
     return redirect(url_for("login"))
 
 
+@app.route("/friends")
+def friends():
+    return render_template("friends.html", values=User.query.all())
+
+
+@app.route("/view_friend/<selected_id>")
+def view_friend(selected_id):
+    i = db.session.query(User).filter_by(id=selected_id).first()
+    return render_template("selectedfriend.html", value=i)
+
+
 @app.route("/user", methods=["POST", "GET"])
 def user():
     email = None
@@ -85,6 +115,18 @@ def user():
     else:
         flash("You are not logged in!...")
         return redirect(url_for('login'))
+
+
+@app.route("/posts")
+def posts():
+    if "user" in session:
+        current_usr = session["user"]
+        found_usr = db.session.query(User).filter_by(name=current_usr).first()
+        all_posts = db.session.query(Post).filter_by(user_id=found_usr.id)
+        return render_template("posts.html", values=all_posts)
+    else:
+        flash("you are not logged in...")
+        return render_template("posts.html")
 
 
 if __name__ == '__main__':

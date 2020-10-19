@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Posts{% endblock %}
+
+{% block content %}
+    <h1>{{ session['user'] }}'s Posts</h1>
+    {% with messages = get_flashed_messages() %}
+        {% if messages%}
+            {% for m in messages %}
+                <p>{{ m }}</p>
+            {% endfor %}
+            <br>
+            <p>To view your posts <a href="{{ url_for("login") }}">login here</a>...</p>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container">
+        <div class="col-md-12">
+            {% for p in values %}
+                <h1>{{ p.post_title }}</h1>
+                <p>{{ p.post_content }}</p>
+                <span class="badge">Posted {{ p.date }}</span>
+                <hr>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

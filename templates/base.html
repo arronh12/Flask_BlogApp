@@ -7,6 +7,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <meta charset="UTF-8">
     <title>{% block page_title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 </head>
 <body>
     <nav class="navbar navbar-inverse">
@@ -16,8 +17,8 @@
         </div>
         <ul class="nav navbar-nav">
           <li class="active"><a href="{{ url_for("home") }}">Home</a></li>
-          <li><a href="#">Posts</a></li>
-          <li><a href="#">Friends</a></li>
+          <li><a href="{{ url_for("posts") }}">Posts</a></li>
+          <li><a href="{{ url_for("friends") }}">Friends</a></li>
           <li><a href="{{ url_for("user") }}">Profile</a></li>
           {% if "user" in session %}
             <li style="float: right"><a href="{{ url_for("logout") }}">Logout</a></li>

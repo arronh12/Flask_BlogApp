@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block page_title %}Friends page{% endblock %}
+{%block content%}
+
+   <!-- Search form -->
+    <div class="active-purple-4 mb-4">
+      <input class="form-control" oninput="" type="text" placeholder="Search" aria-label="Search">
+    </div>
+
+  <div class="list-group">
+      <h2>Friends</h2>
+
+        <ul class="list-group">
+        {% for f in values %}
+             <li class="list-group-item"><a href="{{ url_for("view_friend", selected_id = f.id) }}">{{ f.name }}</a></li>
+        {% endfor %}
+        </ul>
+
+  </div>
+{% endblock %}
