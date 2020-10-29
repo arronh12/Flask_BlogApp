@@ -3,7 +3,8 @@
 {% block page_title %}Posts{% endblock %}
 
 {% block content %}
-    <h1>{{ session['user'] }}'s Posts</h1>
+
+
     {% with messages = get_flashed_messages() %}
         {% if messages%}
             {% for m in messages %}
@@ -11,6 +12,17 @@
             {% endfor %}
             <br>
             <p>To view your posts <a href="{{ url_for("login") }}">login here</a>...</p>
+        {% else %}
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <h1>Your Posts</h1>
+                    </div>
+                    <div class="col">
+                        <a href="{{ url_for("make_post") }}" class="button" style="border: black">  Make Post</a>
+                    </div>
+                </div>
+            </div>
         {% endif %}
     {% endwith %}
 
@@ -24,4 +36,5 @@
             {% endfor %}
         </div>
     </div>
+
 {% endblock %}
