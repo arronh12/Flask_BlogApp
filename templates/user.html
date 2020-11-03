@@ -9,9 +9,22 @@
         {% endif %}
     {% endwith %}
     <h1>Welcome, {{ session['user'] }}</h1>
-    <form action="#" method="POST">
-        <input type="email" name="email" placeholder="Enter Email" value="{{ email if  email }}"/>
-        <input type="submit" value="submit"/>
+    <h2>You can view and update profile details here.</h2>
+    <form action="#" class="form-group" method="POST">
+        <div class="form-group">
+            <input type="email" name="email" value="{{ session['email'] }}" required/>
+            <input type="submit" name="button_email" value="Change"/>
+        </div>
+        <div class="form-group">
+            <input type="text" name="nm" value="{{ session['user'] }}" required/>
+            <input type="submit" name="button_name" value="Change"/>
+        </div>
+        <div class="form-group" style="margin-top: 5%">
+            <small id="pw_change_info" class="form-text text-muted">Passwords must match.</small><br>
+            <input type="password" name="pw" value="*" required/>
+            <br>
+            <input type="password" name="pw2" value="*" required/>
+            <input type="submit" name="button_pw" value="Change"/>
+        </div>
     </form>
-
 {% endblock %}

@@ -9,14 +9,21 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+
     <form action="#" class="form-group" method="post">
-        <label for="login_name">Username:</label>
-        <input type="text" class="form-control" name="login_name" placeholder="Submit username." required/>
-        <br>
-        <label for="login_pw">Password:</label>
-        <input type="password" class="form-control" name="login_pw" placeholder="Submit password." required/>
+        <div class="form-group">
+            <label for="login_name">Username:</label>
+            <input type="text" class="form-control" name="login_name" placeholder="Submit username." required/>
+            <small id="login_name_help" class="form-text text-muted">Username is case sensitive.</small>
+        </div>
+        <div class="form-group">
+            <label for="login_pw">Password:</label>
+            <input type="password" class="form-control" name="login_pw" placeholder="Submit password." required/>
+            <small id="login_pw_help" class="form-text text-muted">Password is case sensitive.</small>
+        </div>
         <input type="submit" value="submit" class="btn btn-primary">
     </form>
     <br>
+
     <p><a href="{{ url_for("reg_user") }}">Register Here...</a></p>
 {% endblock %}

@@ -1,4 +1,5 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
+from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 from datetime import date, datetime
@@ -6,6 +7,7 @@ from passlib.hash import sha256_crypt
 
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
@@ -59,22 +61,21 @@ def login():
         current_usr = request.form['login_name']
         current_pw = request.form['login_pw']
 
-        hashed_pw = sha256_crypt.encrypt(current_pw)
-
-        session['user'] = current_usr
-        print("User:" + current_usr + ", Password:" + current_pw)
-
         found_usr = db.session.query(User).filter_by(name=current_usr).first()
 
         if found_usr:
-            session['email'] = found_usr.email
-        else:
-            usr = User(current_usr, "", hashed_pw)
-            db.session.add(usr)
-            db.session.commit()
+            if bcrypt.check_password_hash(found_usr.password, current_pw):  # returns True:
+                session['email'] = found_usr.email
+                flash("Login successful!...")
+                session['user'] = current_usr
+                return redirect(url_for("user"))
+            else:
+                flash("Password incorrect!...Try again.")
+                return redirect(url_for("login"))
 
-        flash("Login successful!...")
-        return redirect(url_for("user"))
+        else:
+            flash("incorrect username or password. Please try again.")
+            return redirect(url_for("login"))
     else:
         if "user" in session:
             flash("Already logged in!...")
@@ -102,7 +103,8 @@ def reg_user():
         pw_2 = request.form['reg_pw_2']
 
         if pw_1 == pw_2:
-            hashed_pw = sha256_crypt.encrypt(pw_1)
+            hashed_pw = bcrypt.generate_password_hash(pw_1)
+
             make_usr = User(name=usr_name, email=usr_email, password=hashed_pw)
             db.session.add(make_usr)
             db.session.commit()
@@ -139,17 +141,36 @@ def user():
         current_usr = session["user"]
 
         if request.method == "POST":
-            email = request.form["email"]
-            session["email"] = email
             found_usr = db.session.query(User).filter_by(name=current_usr).first()
-            found_usr.email = email
+            email = request.form["email"]
+
+            if "button_name" in request.form:
+                found_usr.name = request.form['nm']
+                name = "name"
+                session['user'] = found_usr.name
+
+            elif "button_email" in request.form:
+                found_usr.email = request.form['email']
+                session['email'] = found_usr.email
+                name = "email"
+
+            elif "button_pw" in request.form:
+                p1 = request.form['pw']
+                p2 = request.form['pw2']
+                if p1 == p2:
+                    hashed_pw = bcrypt.generate_password_hash(p1)
+                    found_usr.password = hashed_pw
+                else:
+                    flash("Passwords do not match. try again")
+
+            flash("User details Updated!")
+            session["email"] = email
             db.session.commit()
-            flash("Email was saved!...")
         else:
             if "email" in session:
                 email = session["email"]
 
-        return render_template('user.html', email=email)
+        return render_template('user.html', user=user)
     else:
         flash("You are not logged in!...")
         return redirect(url_for('login'))
